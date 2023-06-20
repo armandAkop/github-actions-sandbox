@@ -1,0 +1,52 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy-le:
+    runs-on: [ ubuntu-latest ]
+    environment: le
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: npm install
+      - run: npm install -g aws-cdk
+      - run: npm run build
+      - name: Console log
+        run: echo "Deployed to le!"
+  diff-prod:
+    runs-on: [ ubuntu-latest ]
+    needs: [deploy-le]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: npm install
+      - run: npm install -g aws-cdk
+      - run: npm run build
+      - name: Console log
+        run: echo "Diffed prod!"
+  deploy-prod:
+    runs-on: [ self-hosted , runner-engineering ]
+    environment: prod
+    needs: [diff-prod]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: npm install
+      - run: npm install -g aws-cdk
+      - run: npm run build
+      - name: Console log
+        run: echo "Deployed prod prod!"
