@@ -35,7 +35,7 @@ jobs:
       - name: Console log
         run: echo "Diffed prod!"
   deploy-prod:
-    runs-on: [ self-hosted , runner-engineering ]
+    runs-on: [ ubuntu-latest ]
     environment: prod
     needs: [diff-prod]
     steps:
